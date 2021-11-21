@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,10 @@ public class NumberService {
 		Integer amount = numberRequest.getAmount();
 		Integer decimalPlaces = numberRequest.getRange().getDecimalPlaces();		
 		Integer sortDirection = numberRequest.getSortDirection();		
-		Boolean allowDuplicated = numberRequest.getAllowDuplicated();		
-		BigDecimal min = numberRequest.getRange().getMin().setScale(decimalPlaces, RoundingMode.DOWN);
-		BigDecimal max = numberRequest.getRange().getMax().setScale(decimalPlaces, RoundingMode.DOWN);
+		Boolean allowDuplicated = numberRequest.getAllowDuplicated();
+		BigDecimal fator = new BigDecimal("10").pow(decimalPlaces);
+		BigDecimal min = numberRequest.getRange().getMin().multiply(fator);
+		BigDecimal max = numberRequest.getRange().getMax().multiply(fator);
 		List<BigDecimal> numbers = new ArrayList<>();
 		
 		if(isImpossibleRequest(min, max, decimalPlaces, amount, allowDuplicated)) {
@@ -28,10 +30,10 @@ public class NumberService {
 		
 		
 		for(Integer i=0; i<amount; i++) {
-			BigDecimal number = generateRandomNumber(min, max, decimalPlaces);
+			BigDecimal number = generateRandomNumber(min, max, fator, decimalPlaces);
 			
 			while(!allowDuplicated && numbers.contains(number)) {
-				number = generateRandomNumber(min, max, decimalPlaces);
+				number = generateRandomNumber(min, max, fator, decimalPlaces);
 			}
 			
 			numbers.add(number);
@@ -46,9 +48,10 @@ public class NumberService {
 		return numbers;
 	}
 	
-	private static BigDecimal generateRandomNumber(BigDecimal min, BigDecimal max, Integer decimalPlaces) {
-		BigDecimal random = new BigDecimal(Math.random()).setScale(decimalPlaces+1, RoundingMode.UP);
-		BigDecimal number = min.add(random.multiply(max.subtract(min)));
+	private static BigDecimal generateRandomNumber(BigDecimal min, BigDecimal max, BigDecimal fator, Integer decimalPlaces) {
+		Integer randomOriginal = ThreadLocalRandom.current().nextInt(min.intValue(), max.add(new BigDecimal("1")).intValue());
+		BigDecimal random = new BigDecimal(randomOriginal.toString());
+		BigDecimal number = random.divide(fator);
 		number = number.setScale(decimalPlaces, RoundingMode.DOWN);
 		return number;
 	}

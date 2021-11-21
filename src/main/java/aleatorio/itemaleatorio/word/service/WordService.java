@@ -1,10 +1,9 @@
 package aleatorio.itemaleatorio.word.service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.stereotype.Service;
 
@@ -45,8 +44,8 @@ public class WordService {
 	}
 	
 	private static String pickRandomWord(List<String> allWords) {
-		Integer randomPosition = Integer.valueOf(new BigDecimal(Math.random()).multiply(new BigDecimal(allWords.size())).setScale(0, RoundingMode.DOWN).toString());
-		return allWords.get(randomPosition); 
+		Integer randomOriginal = ThreadLocalRandom.current().nextInt(0, allWords.size());
+		return allWords.get(randomOriginal); 
 	}
 	
 	private static Boolean isImpossibleRequest(Integer wordsSize, Integer amount, Boolean allowDuplicated) {	
