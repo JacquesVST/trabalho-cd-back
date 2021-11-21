@@ -14,7 +14,7 @@ import aleatorio.itemaleatorio.number.model.Number;
 import aleatorio.itemaleatorio.number.service.NumberService;
 
 @RestController
-@RequestMapping("/number")
+@RequestMapping("/numbers")
 public class NumberController {
 
 	@Autowired

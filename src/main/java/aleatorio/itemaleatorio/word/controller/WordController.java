@@ -13,7 +13,7 @@ import aleatorio.itemaleatorio.word.model.Word;
 import aleatorio.itemaleatorio.word.service.WordService;
 
 @RestController
-@RequestMapping("/word")
+@RequestMapping("/words")
 public class WordController {
 
 	@Autowired
